@@ -1,8 +1,8 @@
-import System.IO -- Required for the hSetEcho primitive
+import System.IO -- modulo necesario para operaciones de entrada/salida. Estamos usando hSetEcho de System.IO
 import Control.Monad (when)
-import System.Exit (exitSuccess)
+import System.Exit (exitSuccess) -- para terminar el programa sin error
 
-hangmanStages :: [String]
+hangmanStages :: [String] -- inicializamos una lista de strings para representar visualmente al monito
 hangmanStages = [
     "  +---+\n  |   |\n      |\n      |\n      |\n      |\n=========",
     "  +---+\n  |   |\n  O   |\n      |\n      |\n      |\n=========",
@@ -14,7 +14,7 @@ hangmanStages = [
   ]
 
 maxGuesses :: Int
-maxGuesses = length hangmanStages - 1  -- Minus 1 because indexes start at 0
+maxGuesses = length hangmanStages - 1  -- Menos 1 porque indices comienzan en 0
 
 displayHangman :: Int -> IO ()
 displayHangman incorrectCount = putStrLn (hangmanStages !! incorrectCount)
