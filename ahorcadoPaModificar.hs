@@ -29,43 +29,40 @@ sgetLine = do x <- getCh
                     xs <- sgetLine
                     return (x:xs)
 
-
 getCh :: IO Char
 getCh = do hSetEcho stdin False
            x <- getChar
            hSetEcho stdin True
            return x
 
-
 play :: String -> String -> Int -> IO ()
 play word guessedLetters incorrectCount = do
   when (incorrectCount >= maxGuesses) $ do
-    displayHangman incorrectCount  -- Show the final hangman stage
-    putStrLn "You've run out of guesses!"
-    putStrLn $ "The word was: " ++ word
+    displayHangman incorrectCount  -- mostrar monito en forma final
+    putStrLn "Se te acabaron los intentos :c"
+    putStrLn $ "La palabra era: " ++ word
     exitSuccess
 
   displayHangman incorrectCount
-  putStrLn $ "Guessed so far: " ++ map (\c -> if c `elem` guessedLetters then c else '_') word
-  putStrLn "Guess a letter: "
+  putStrLn $ "Lo que llevas adivinado: " ++ map (\c -> if c `elem` guessedLetters then c else '_') word
+  putStrLn "Adivina una letra: "
   guess <- getLine
   let guessChar = if null guess then ' ' else head guess
   if guessChar `elem` word then
-    putStrLn "Correct!"
+    putStrLn "Correcto!"
   else
-    putStrLn "Incorrect!"
+    putStrLn "Incorrecto!"
   let newGuessedLetters = if guessChar `elem` word then guessChar : guessedLetters else guessedLetters
   let newIncorrectCount = if guessChar `elem` word then incorrectCount else incorrectCount + 1
   if all (`elem` newGuessedLetters) word then do
-    putStrLn $ "Congratulations! You've guessed the word: " ++ word
+    putStrLn $ "Felicidades jugador 2! Haz adivinado la palabra: " ++ word
     exitSuccess
   else
     play word newGuessedLetters newIncorrectCount
 
-
 main :: IO ()
 main = do
-  putStrLn "Think of a word: "
+  putStrLn "Jugador 1, escribe una palabra: "
   word <- sgetLine
-  putStrLn "Try to guess it, one letter at a time."
+  putStrLn "Jugador 2, adivina la palabra, una letra a la vez: "
   play word "" 0
