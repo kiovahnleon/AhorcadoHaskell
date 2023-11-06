@@ -1,11 +1,6 @@
 import System.IO -- Required for the hSetEcho primitive
 import Control.Monad (when)
-
-hangman :: IO ()
-hangman = do putStrLn "Think of a word: "
-             word <- sgetLine
-             putStrLn "Try to guess it:"
-             play word 0
+import System.Exit (exitSuccess)
 
 hangmanStages :: [String]
 hangmanStages = [
@@ -42,31 +37,35 @@ getCh = do hSetEcho stdin False
            return x
 
 
-play :: String -> Int -> IO ()
-play word incorrectCount = do
+play :: String -> String -> Int -> IO ()
+play word guessedLetters incorrectCount = do
   when (incorrectCount >= maxGuesses) $ do
-    displayHangman incorrectCount
+    displayHangman incorrectCount  -- Show the final hangman stage
     putStrLn "You've run out of guesses!"
     putStrLn $ "The word was: " ++ word
-    return ()
+    exitSuccess
 
   displayHangman incorrectCount
-  putStr "? "
+  putStrLn $ "Guessed so far: " ++ map (\c -> if c `elem` guessedLetters then c else '_') word
+  putStrLn "Guess a letter: "
   guess <- getLine
-  if guess == word then
-    putStrLn "You got it!"
+  let guessChar = if null guess then ' ' else head guess
+  if guessChar `elem` word then
+    putStrLn "Correct!"
   else
-    let
-      newIncorrectCount = if match word guess == map (const '-') word
-                          then incorrectCount + 1
-                          else incorrectCount
-      feedback = match word guess
-    in do
-      putStrLn feedback
-      putStrLn $ "Incorrect guesses left: " ++ show (maxGuesses - newIncorrectCount)
-      play word newIncorrectCount
+    putStrLn "Incorrect!"
+  let newGuessedLetters = if guessChar `elem` word then guessChar : guessedLetters else guessedLetters
+  let newIncorrectCount = if guessChar `elem` word then incorrectCount else incorrectCount + 1
+  if all (`elem` newGuessedLetters) word then do
+    putStrLn $ "Congratulations! You've guessed the word: " ++ word
+    exitSuccess
+  else
+    play word newGuessedLetters newIncorrectCount
 
 
-match :: String -> String -> String
-match xs ys =
-   [if elem x ys then x else '-' | x <- xs]
+main :: IO ()
+main = do
+  putStrLn "Think of a word: "
+  word <- sgetLine
+  putStrLn "Try to guess it, one letter at a time."
+  play word "" 0
