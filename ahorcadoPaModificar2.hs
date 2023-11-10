@@ -18,8 +18,8 @@ maxGuesses = length hangmanStages - 1  -- Menos 1 porque indices comienzan en 0
 
 displayHangman :: Int -> IO ()
 displayHangman incorrectCount = putStrLn (hangmanStages !! incorrectCount)
-sgetLine :: IO String
 
+sgetLine :: IO String
 sgetLine = do x <- getCh
               if x == '\n' then
                  do putChar x
