@@ -65,8 +65,6 @@ play word guessedLetters incorrectGuesses incorrectCount = do
     let newIncorrectCount = incorrectCount + 1
     play word guessedLetters newIncorrectGuesses newIncorrectCount
 
-
-
 main :: IO ()
 main = do
   putStrLn "Jugador 1, escribe una palabra: "
